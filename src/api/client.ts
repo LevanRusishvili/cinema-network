@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 const TOKEN_KEY = "token";
 export const tokenStorage = {
@@ -15,19 +15,28 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// authStore registers this later; keeps the client free of circular imports
-let onUnauthorized: (() => void) | null = null;
-export const setUnauthorizedHandler = (fn: () => void) => {
+type RetryConfig = InternalAxiosRequestConfig & { _retried?: boolean };
+type Replay = () => Promise<unknown>;
+
+let onUnauthorized: ((replay: Replay) => Promise<unknown>) | null = null;
+export const setUnauthorizedHandler = (fn: (replay: Replay) => Promise<unknown>) => {
   onUnauthorized = fn;
 };
+
+// 401 on these means "wrong credentials" or "stale token on boot", not "replay me"
+const SILENT = ["/login", "/register", "/me", "/logout"];
 
 api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
-    const isLogin = error.config?.url?.includes("/login");
-    if (error.response?.status === 401 && !isLogin) {
+    const config = error.config as RetryConfig | undefined;
+    const silent = SILENT.some((p) => config?.url?.startsWith(p));
+    if (error.response?.status === 401 && config && !config._retried && !silent && onUnauthorized) {
       tokenStorage.clear();
-      onUnauthorized?.();
+      return onUnauthorized(() => {
+        config._retried = true;
+        return api.request(config);
+      });
     }
     return Promise.reject(error);
   },

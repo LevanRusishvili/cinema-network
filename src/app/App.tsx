@@ -1,6 +1,12 @@
+import { useAuthStore } from "@/stores/authStore";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 
 export default function App() {
+   const init = useAuthStore((s) => s.init);
+  useEffect(() => {
+    init();
+  }, [init]);
   return (
     <Routes>
       <Route path="/" element={<div>Home</div>} />

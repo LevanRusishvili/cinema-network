@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { format, parseISO } from "date-fns";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button } from "@/components/ui/Button";
@@ -24,20 +25,20 @@ const splitLabel = (label: string) => {
   return m ? { name: m[1], hint: m[2] } : { name: label, hint: "" };
 };
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+const Section = ({ title, children }: { title: string; children: ReactNode }) => (
   <div className="flex flex-col gap-3">
-    <h3 className="text-overline text-muted">{title}</h3>
-    {children}
+    <h3 className="text-overline text-[11px] text-muted/80">{title}</h3>
+    <div className="flex flex-col gap-2">{children}</div>
   </div>
 );
 
-const Divider = () => <div className="h-px bg-surface-2" />;
+const Divider = () => <div className="h-px bg-white/5" />;
+
+const shell = "flex w-[320px] shrink-0 flex-col gap-5 self-start rounded-2xl bg-surface p-6";
 
 export function FiltersPanel({ filters, update, clearAll, activeCount }: Props) {
   const { data: options, isLoading, isError, refetch } = useFilterOptions();
 
-const shell =
-  "no-scrollbar sticky top-6 flex max-h-[calc(100vh-48px)] w-[320px] shrink-0 flex-col gap-6 overflow-y-auto rounded-[20px] bg-surface p-6";
   if (isLoading)
     return (
       <aside className={shell}>
@@ -53,27 +54,24 @@ const shell =
       </aside>
     );
 
+  const formatsOf = (venueSlugs: string[]) =>
+    venueSlugs.length
+      ? new Set(
+          options.venues
+            .filter((v) => venueSlugs.includes(v.slug))
+            .flatMap((v) => (v.formats ?? []).map((f) => f.slug)),
+        )
+      : null;
+
   // formats available in the selected venues; with no venue selected, all of them
-  const allowed = filters.venues.length
-    ? new Set(
-        options.venues
-          .filter((v) => filters.venues.includes(v.slug))
-          .flatMap((v) => (v.formats ?? []).map((f) => f.slug)),
-      )
-    : null;
+  const allowed = formatsOf(filters.venues);
   const visibleFormats = allowed
     ? options.formats.filter((f) => allowed.has(f.slug))
     : options.formats;
 
   const onVenue = (slug: string) => {
     const venues = toggle(filters.venues, slug);
-    const nowAllowed = venues.length
-      ? new Set(
-          options.venues
-            .filter((v) => venues.includes(v.slug))
-            .flatMap((v) => (v.formats ?? []).map((f) => f.slug)),
-        )
-      : null;
+    const nowAllowed = formatsOf(venues);
     // drop selected formats the chosen venues do not have
     update({
       venues,
@@ -109,8 +107,8 @@ const shell =
                 aria-pressed={active}
                 onClick={() => update({ date: d })}
                 className={cn(
-                  "flex h-11 w-[38px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-lg text-[11px] font-semibold transition",
-                  active ? "bg-primary text-white" : "bg-surface-2 text-muted hover:text-white",
+                  "flex h-10 w-[34px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-lg text-[10px] font-semibold transition",
+                  active ? "bg-primary text-white" : "bg-white/5 text-muted hover:text-white",
                 )}
               >
                 <span>{format(parseISO(d), "EEE")}</span>
@@ -162,16 +160,12 @@ const shell =
       </Section>
       <Divider />
 
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-col items-center gap-3 rounded-b-[20px] bg-surface px-6 pb-6 pt-3">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          disabled={activeCount === 0}
-          onClick={clearAll}
-        >
-          Clear all filters
-        </Button>
+      <div className="flex flex-col items-center gap-3 pt-2">
+        {activeCount > 0 && (
+          <Button variant="outline" size="sm" className="w-full" onClick={clearAll}>
+            Clear all filters
+          </Button>
+        )}
         <p className="text-body-s text-muted">{activeCount} filters active</p>
       </div>
     </aside>

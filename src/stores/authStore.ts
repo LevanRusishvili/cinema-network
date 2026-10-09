@@ -38,6 +38,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     tokenStorage.set(token);
     const { pending } = get();
     set({ user, pending: null });
+    queryClient.invalidateQueries();
     useModalStore.getState().close();
     pending?.run(); // continue the protected action automatically
   },

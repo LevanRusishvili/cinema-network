@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/authStore";
 import HomePage from "@/features/home/HomePage";
 import SessionsPage from "@/features/sessions/SessionsPage";
 import MoviePage from "@/features/movie/MoviePage";
+import ProfilePage from "@/features/profile/ProfilePage";
 
 export default function App() {
   const init = useAuthStore((s) => s.init);
@@ -17,8 +18,9 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />{" "}
         <Route path="/sessions" element={<SessionsPage />} />{" "}
-        <Route path="/movies/:slug" element={<MoviePage />} />{" "}
-        <Route path="/profile" element={<div className="mx-auto max-w-app p-6">Profile</div>} />
+        <Route path="/movies/:slug" element={<MoviePage />} /> import ProfilePage from
+        "@/features/profile/ProfilePage"; // ...
+        <Route path="/profile" element={<ProfilePage />} />{" "}
       </Route>
     </Routes>
   );

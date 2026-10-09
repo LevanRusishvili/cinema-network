@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { Modal } from "@/components/ui/Modal";
 import { LoginModal } from "@/features/auth/LoginModal";
 import { RegisterModal } from "@/features/auth/RegisterModal";
+import { BookingModal } from "@/features/booking/BookingModal";
 import { useModalStore } from "@/stores/modalStore";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -20,11 +20,7 @@ export function ModalRoot() {
     case "register":
       return <RegisterModal onClose={closeAuth} />;
     case "booking":
-      return (
-        <Modal onClose={close} className="max-w-[1100px]">
-          <h2 className="text-h2">Booking (placeholder)</h2>
-        </Modal>
-      );
+      return <BookingModal key={modal.sessionId} sessionId={modal.sessionId} onClose={close} />;
     default:
       return null;
   }

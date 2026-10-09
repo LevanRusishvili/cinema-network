@@ -138,8 +138,8 @@ export function Navbar() {
   const open = useModalStore((s) => s.open);
 
   return (
-    <header className="bg-gradient-to-b from-black/70 to-transparent">
-      <nav className="mx-auto flex h-[72px] max-w-app items-center gap-8 px-[34px]">
+    <header className="absolute inset-x-0 top-0 z-30 bg-[linear-gradient(180deg,#000_-212.35%,rgba(0,0,0,0.51)_32.09%,rgba(0,0,0,0)_93.93%)]">
+      <nav className="mx-auto flex h-[111px] max-w-app items-center gap-8 px-[60px] pb-[40px] pt-[30px]">
         <Link to="/" className="text-h3 tracking-wide">
           KINO <span className="text-primary">XII</span>
         </Link>

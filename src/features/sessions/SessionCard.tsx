@@ -7,20 +7,26 @@ import type { Session } from "@/types";
 
 const LOW_SEATS = 5;
 
-export function SessionCard({ session }: { session: Omit<Session, "movie"> }) {
+type Props = {
+  session: Omit<Session, "movie">;
+  blockedReason?: string;
+};
+
+export function SessionCard({ session, blockedReason }: Props) {
   const requireAuth = useAuthStore((s) => s.requireAuth);
   const openModal = useModalStore((s) => s.open);
   const soldOut = session.isSoldOut;
+  const disabled = soldOut || !!blockedReason;
 
   return (
     <button
       type="button"
-      disabled={soldOut}
-      title={soldOut ? "Sold out" : undefined}
+      disabled={disabled}
+      title={blockedReason ?? (soldOut ? "Sold out" : undefined)}
       onClick={() => requireAuth(() => openModal({ type: "booking", sessionId: session.id }))}
       className={cn(
         "flex h-[104px] w-[252px] shrink-0 flex-col justify-between rounded-2xl bg-surface p-3 text-left transition",
-        soldOut ? "cursor-not-allowed opacity-45" : "cursor-pointer hover:bg-surface-2",
+        disabled ? "cursor-not-allowed opacity-45" : "cursor-pointer hover:bg-surface-2",
       )}
     >
       <div className="flex items-center justify-between">

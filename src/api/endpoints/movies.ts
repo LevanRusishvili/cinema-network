@@ -17,3 +17,6 @@ export const getMovieSessions = (slug: string, date: string) =>
     .then((r) => r.data.data);
 
 export const notifyMe = (slug: string) => api.post(`/movies/${slug}/notify`);
+
+export const searchMovies = (q: string) =>
+  api.get<{ data: Movie[] }>("/search", { params: { q } }).then((r) => r.data.data);

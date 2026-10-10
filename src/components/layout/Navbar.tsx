@@ -5,6 +5,7 @@ import { useModalStore } from "@/stores/modalStore";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import type { User } from "@/types";
+import { SearchBox } from "./SearchBox";
 
 const initials = (name: string) =>
   name
@@ -153,9 +154,7 @@ export function Navbar() {
         </NavLink>
 
         <div className="ml-auto flex items-center gap-6">
-          <div className="text-body-s flex h-9 w-[320px] items-center gap-2 rounded-full bg-white/10 px-4 text-muted">
-            <span aria-hidden>⌕</span> Search films and live events
-          </div>
+          <SearchBox />
           {ready &&
             (user ? (
               <UserMenu user={user} />
